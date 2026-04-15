@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science 20: Unit C Geology Quiz</title>
+    <style>
+        /* Ensures all text is black and sets a clean, readable layout */
+        body {
+            color: black;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+        }
+        h1, h2, h3, p, span, div {
+            color: black;
+        }
+        .hidden {
+            display: none;
+        }
+        .option-label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+            padding: 5px;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            background-color: #e0e0e0;
+            border: 2px solid black;
+            color: black;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #cccccc;
+        }
+        #feedback-container {
+            border: 2px solid black;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+        #result-container {
+            border: 2px solid black;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+        }
+        hr {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Science 20 Alberta: Unit C Geology Mastery Quiz</h1>
+    <hr>
+
+    <div id="quiz-container">
+        <h2 id="question-title">Question 1 of 25</h2>
+        <p id="question-text">Loading question...</p>
+        <div id="options-container"></div>
+        <button id="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+    </div>
+
+    <div id="feedback-container" class="hidden">
+        <h3 id="feedback-status"></h3>
+        <p id="feedback-rationale"></p>
+        <button id="next-btn" onclick="nextQuestion()">Next Question</button>
+    </div>
+
+    <div id="result-container" class="hidden">
+        <h2>Quiz Complete!</h2>
+        <p>Your Final Score: <strong id="score-display"></strong></p>
+        <h3>Feedback on Common Mistakes:</h3>
+        <div id="mistakes-feedback"></div>
+        <button onclick="location.reload()">Retake Quiz</button>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "A research vessel drags a magnetometer across the Atlantic Ocean floor. The data reveals alternating bands of normal and reversed magnetic polarity that are perfectly symmetrical on either side of the Mid-Atlantic Ridge. If a new band of normal polarity is found to be exceptionally wide, what can a geologist infer about the Earth's history during that specific time period?",
+                options: [
+                    "The Earth's magnetic field fluctuated rapidly, causing the ridge to produce more magma.",
+                    "The rate of seafloor spreading was significantly faster, or the period of normal polarity lasted a very long time.",
+                    "The ocean floor was subducting at a faster rate than it was being created at the ridge.",
+                    "A massive meteor impact temporarily halted the movement of the tectonic plates."
+                ],
+                correctIndex: 1,
+                rationale: "A wide band indicates either a high rate of magma extrusion over time or a prolonged period without a magnetic reversal.",
+                topic: "Plate Tectonics"
+            },
+            {
+                question: "A seismograph station in northern Alberta records the arrival of Primary (P) waves from an earthquake in South America, but Secondary (S) waves never arrive. Based on your knowledge of Earth's interior, what is the most scientifically sound explanation for this?",
+                options: [
+                    "The S-waves lacked the initial energy to travel the vast distance from South America to Alberta.",
+                    "S-waves are transverse waves that cannot travel through the liquid outer core of the Earth.",
+                    "The S-waves were traveling too fast and were refracted completely out of the lithosphere.",
+                    "Alberta's thick sedimentary basin absorbed the S-waves before they could reach the seismograph."
+                ],
+                correctIndex: 1,
+                rationale: "S-waves cannot propagate through liquids. Because the direct path goes through the Earth's liquid outer core, S-waves are absorbed/blocked.",
+                topic: "Seismology & Earth's Interior"
+            },
+            {
+                question: "You are examining three seismograms from stations in Edmonton, Calgary, and Fort McMurray for a single earthquake event. You notice that the time difference between the arrival of the P-wave and S-wave is 45 seconds in Edmonton, 20 seconds in Calgary, and 70 seconds in Fort McMurray. Where is the epicenter most likely located?",
+                options: [
+                    "Very close to Fort McMurray, as it had the longest lag time.",
+                    "Closest to Calgary, because the P and S waves arrived closest together in time.",
+                    "Exactly halfway between Calgary and Edmonton.",
+                    "Deep within the mantle beneath Edmonton."
+                ],
+                correctIndex: 1,
+                rationale: "The shorter the time difference between the faster P-wave and slower S-wave, the shorter the distance to the epicenter.",
+                topic: "Seismology & Earth's Interior"
+            },
+            {
+                question: "A geologist is trying to date a rock layer containing early amphibian fossils. They find an igneous intrusion cutting through this layer. Analysis of the intrusion shows it contains a radioactive isotope with a half-life of 100 million years, and currently, there is only 12.5% of the original parent isotope remaining. What can the geologist conclude about the amphibian fossils?",
+                options: [
+                    "The fossils are exactly 300 million years old.",
+                    "The fossils are younger than 300 million years old.",
+                    "The fossils are older than 300 million years old.",
+                    "The fossils are exactly 12.5 million years old."
+                ],
+                correctIndex: 2,
+                rationale: "12.5% remaining equals 3 half-lives (300 million years). Because the intrusion cuts the fossil rock, the fossil rock must be older than the intrusion.",
+                topic: "Geologic Time & Dating"
+            },
+            {
+                question: "While hiking in the Canadian Rockies, you observe a cliff face where highly folded, tilted layers of shale are directly overlain by perfectly horizontal layers of sandstone. The boundary between them is a jagged, uneven line. What sequence of geological events best explains this formation?",
+                options: [
+                    "Deposition of shale, immediate deposition of sandstone, followed by a massive earthquake that folded only the bottom layer.",
+                    "Deposition of shale, folding and uplifting by tectonic forces, a period of erosion, followed by subsidence and deposition of sandstone.",
+                    "Volcanic eruption creating the shale, followed by river erosion, followed by wind depositing the sandstone.",
+                    "The sandstone was deposited first, and the heavier shale was thrust underneath it by a subduction zone."
+                ],
+                correctIndex: 1,
+                rationale: "This describes an angular unconformity: older rocks were deposited, deformed, eroded away (creating the jagged line), and then younger rocks were deposited on top.",
+                topic: "Geologic Time & Dating"
+            },
+            {
+                question: "A petroleum geologist is exploring a new region in Alberta. They find an area where porous limestone is folded into an upward arch (an anticline) and is capped by a thick layer of dense, impermeable shale. Why is this an ideal location to drill?",
+                options: [
+                    "The shale generates the oil, which then sinks into the limestone.",
+                    "The anticline structure funnels magma upward, converting limestone to oil.",
+                    "Oil migrates upward through the porous limestone until it hits the impermeable shale cap, accumulating in the crest of the fold.",
+                    "The shale is the source of the oil, and the anticline shape makes drilling easier."
+                ],
+                correctIndex: 2,
+                rationale: "Hydrocarbons are buoyant and migrate upward through porous rock until trapped by an impermeable layer in a structural high.",
+                topic: "Alberta Geology & Resources"
+            },
+            {
+                question: "The Burgess Shale in British Columbia is one of the most important fossil sites in the world. If a paleontologist discovers a new fossil deposit in Alberta with similar preservation characteristics, what unique feature must this new site have captured?",
+                options: [
+                    "It must contain fossils of large, bipedal dinosaurs showing pack-hunting behavior.",
+                    "It must show the preservation of soft body parts, giving a complete picture of delicate organisms.",
+                    "It must be composed entirely of igneous rock.",
+                    "It must contain massive quantities of petrified wood."
+                ],
+                correctIndex: 1,
+                rationale: "The exceptional preservation of soft tissues due to rapid, anoxic burial is the hallmark of Burgess Shale-type deposits.",
+                topic: "Geologic Time & Dating"
+            },
+            {
+                question: "During the Devonian period, much of Alberta was covered by a shallow tropical sea, leading to massive reef structures. Why are these ancient Devonian reefs economically vital to modern-day Alberta?",
+                options: [
+                    "They provide the primary source of limestone for building construction.",
+                    "The coral skeletons transformed directly into high-grade coal seams.",
+                    "These highly porous ancient reefs act as excellent reservoir rocks holding vast quantities of petroleum.",
+                    "They contain concentrated deposits of rare earth metals."
+                ],
+                correctIndex: 2,
+                rationale: "The ancient Leduc reefs are highly porous and became perfect reservoirs for trapping migrating oil and gas.",
+                topic: "Alberta Geology & Resources"
+            },
+            {
+                question: "The Western Canada Sedimentary Basin (WCSB) is a massive wedge of sedimentary rock underlying much of Alberta. It is very thin in the northeast and extremely thick in the southwest. What tectonic process best explains this wedge shape?",
+                options: [
+                    "A giant meteor struck the southwest, creating a deep crater that filled with sediment.",
+                    "The collision of tectonic plates caused the Rocky Mountains to uplift, and subsequent erosion shed massive amounts of sediment eastward into a subsiding basin.",
+                    "Volcanic eruptions in the northeast pushed sediments toward the southwest.",
+                    "Glaciers bulldozed soil from the Canadian Shield against the Rocky Mountains."
+                ],
+                correctIndex: 1,
+                rationale: "Mountain building depressed the crust to the east, and rivers eroded the mountains, filling the deep basin with sediment.",
+                topic: "Alberta Geology & Resources"
+            },
+            {
+                question: "You observe a steep rock face in the Canadian Rockies. An older layer of Cambrian limestone is resting directly on top of a much younger layer of Cretaceous shale. Which structural geological feature best explains this?",
+                options: [
+                    "A normal fault caused by the crust stretching.",
+                    "A massive volcanic eruption inverted the rock layers completely.",
+                    "A thrust fault caused by compressional forces pushing the older rock up and over the younger rock.",
+                    "An unconformity where younger rock was deposited beneath older rock."
+                ],
+                correctIndex: 2,
+                rationale: "Thrust faults are common in the Rockies. Compression forces older, deeper rock to slide up and over younger, shallower rock.",
+                topic: "Alberta Geology & Resources"
+            },
+            {
+                question: "Scientists analyze ice cores and find a layer where the amount of heavy oxygen-18 is unusually low. What does this indicate about the Earth's climate at the time?",
+                options: [
+                    "The global climate was much colder, likely an ice age, because less energy was available to evaporate heavier oxygen-18.",
+                    "The global climate was extremely hot, breaking oxygen-18 down.",
+                    "Intense volcanic activity released massive amounts of pure oxygen-16.",
+                    "The Earth's magnetic field reversed."
+                ],
+                correctIndex: 0,
+                rationale: "During colder periods, heavier Oxygen-18 is harder to evaporate from the ocean, leading to less of it precipitating as snow.",
+                topic: "Climate & Glaciation"
+            },
+            {
+                question: "Fossilized leaves of the Glossopteris fern are found in South America, Africa, India, Antarctica, and Australia. A skeptic argues the seeds blew across the oceans. What is the strongest geological counter-argument?",
+                options: [
+                    "Glossopteris seeds are heavily fossilized and would sink.",
+                    "The continents must have been joined together because the seeds were too heavy to be carried by wind across vast modern oceans.",
+                    "The plant evolved independently five separate times due to identical climates.",
+                    "Ocean currents were significantly faster back then."
+                ],
+                correctIndex: 1,
+                rationale: "Glossopteris seeds were large and bulky. The only logical explanation for their widespread distribution is continental drift.",
+                topic: "Plate Tectonics"
+            },
+            {
+                question: "Why would it be a critical mistake to use Carbon-14 dating on a Tyrannosaurus rex femur found in the Alberta Badlands?",
+                options: [
+                    "Dinosaurs did not consume carbon-based plants or animals.",
+                    "The extreme heat of fossilization destroys radioactive isotopes.",
+                    "Carbon-14 has a short half-life, meaning virtually all of it would have decayed away millions of years before the present.",
+                    "Carbon-14 dating only works on igneous rocks."
+                ],
+                correctIndex: 2,
+                rationale: "Carbon-14 is only useful for objects up to about 50,000 years old. Dinosaurs died out 65 million years ago.",
+                topic: "Geologic Time & Dating"
+            },
+            {
+                question: "An earthquake measuring 7.5 occurs. An aftershock measuring 5.5 occurs. How much more ground motion (amplitude) was produced by the initial earthquake compared to the aftershock?",
+                options: [
+                    "2 times more",
+                    "20 times more",
+                    "100 times more",
+                    "1000 times more"
+                ],
+                correctIndex: 2,
+                rationale: "The Richter scale is logarithmic. A difference of 2.0 means 10 * 10 = 100 times more ground motion.",
+                topic: "Seismology & Earth's Interior"
+            },
+            {
+                question: "Sensors detect that P-wave velocity suddenly increases dramatically at a depth of about 35 kilometers. What geological boundary has been reached?",
+                options: [
+                    "The boundary between the liquid outer core and the solid inner core.",
+                    "The Mohorovičić discontinuity (Moho), marking the transition from the less dense crust to the denser mantle.",
+                    "A massive underground aquifer.",
+                    "A subducting tectonic plate melting into magma."
+                ],
+                correctIndex: 1,
+                rationale: "Seismic waves travel faster in denser materials. The Moho is the boundary where the crust ends and the denser mantle begins.",
+                topic: "Seismology & Earth's Interior"
+            },
+            {
+                question: "In a field in southern Alberta, there is a massive block of pink quartzite rock completely different from local bedrock. What process most likely placed this 'erratic' boulder there?",
+                options: [
+                    "A violent volcanic eruption from the Rocky Mountains.",
+                    "A massive continental ice sheet carried the boulder and dropped it as the ice melted.",
+                    "Ancient, powerful rivers rolled the boulder across the plains.",
+                    "Tectonic uplift pushed an ancient piece of the inner core to the surface."
+                ],
+                correctIndex: 1,
+                rationale: "Glaciers act like massive conveyor belts, picking up rocks and depositing them far from their source when the ice retreats.",
+                topic: "Alberta Geology & Resources"
+            },
+            {
+                question: "For a fossil to be considered an excellent index fossil for correlating rock layers worldwide, it must meet which criteria?",
+                options: [
+                    "It lived for hundreds of millions of years in various environments.",
+                    "It must be geographically widespread but only have existed for a very short, specific period of geologic time.",
+                    "It must be a very rare species found only in one specific location.",
+                    "It must be perfectly preserved including soft tissues."
+                ],
+                correctIndex: 1,
+                rationale: "A good index fossil is widespread but short-lived, acting like a specific time-stamp for the rock layer.",
+                topic: "Geologic Time & Dating"
+            },
+            {
+                question: "Near Drumheller, Alberta, a thin band of clay rich in iridium sits just above dinosaur fossils. Above this clay, dinosaur fossils disappear. What scientific theory does this support?",
+                options: [
+                    "The Theory of Uniformitarianism.",
+                    "The Alvarez Hypothesis, suggesting a massive asteroid impact caused the K-Pg mass extinction.",
+                    "The Theory of Continental Drift.",
+                    "The concept of paleomagnetism."
+                ],
+                correctIndex: 1,
+                rationale: "The iridium anomaly is the primary evidence for the asteroid impact that wiped out the non-avian dinosaurs.",
+                topic: "Geologic Time & Dating"
+            },
+            {
+                question: "Why are there no deep-focus earthquakes (up to 700km deep) at divergent plate boundaries, unlike convergent boundaries?",
+                options: [
+                    "The crust at a divergent boundary is too cold and rigid.",
+                    "Earthquakes only happen when water seeps into cracks.",
+                    "At divergent boundaries, the lithosphere is thin and magma is rising; deep rock is ductile and bends rather than fracturing.",
+                    "The tectonic plates move apart too slowly."
+                ],
+                correctIndex: 2,
+                rationale: "Deep earthquakes require brittle rock to snap. At divergent boundaries, deep rock is too hot and plastic to fracture.",
+                topic: "Plate Tectonics"
+            },
+            {
+                question: "Alberta has vast reserves of coal. What does the presence of massive coal seams tell you about Alberta's environment millions of years ago?",
+                options: [
+                    "It was covered by a deep ocean filled with plankton.",
+                    "It was a hot, arid desert.",
+                    "It had extensive, lush, swampy wetland forests.",
+                    "It was subjected to intense volcanic activity."
+                ],
+                correctIndex: 2,
+                rationale: "Coal forms from the accumulation and compaction of terrestrial plant material in swampy, oxygen-poor environments.",
+                topic: "Alberta Geology & Resources"
+            },
+            {
+                question: "The Hawaiian Islands form a chain of progressively older volcanoes, but they are in the middle of a tectonic plate. What geological model best explains this?",
+                options: [
+                    "A massive transform fault runs directly beneath the islands.",
+                    "The Pacific Plate is moving over a stationary 'hot spot' or mantle plume.",
+                    "The ocean crust is exceptionally thin, leaking the outer core.",
+                    "An ancient mid-ocean ridge failed and stopped diverging."
+                ],
+                correctIndex: 1,
+                rationale: "A hot spot remains stationary deep in the mantle while the tectonic plate moves over it, creating a trail of volcanoes.",
+                topic: "Plate Tectonics"
+            },
+            {
+                question: "Which of the following scenarios is the best application of the Principle of Uniformitarianism?",
+                options: [
+                    "Assuming a massive, unexplainable flood created a canyon in a few days.",
+                    "Observing how mud cracks form today, and concluding fossilized mud cracks formed in the exact same type of environment.",
+                    "Believing radioactive decay rates were faster in the past.",
+                    "Concluding an entire mountain range was formed by a single earthquake."
+                ],
+                correctIndex: 1,
+                rationale: "Uniformitarianism states 'the present is the key to the past.' Observable modern processes explain ancient geological features.",
+                topic: "Geologic Time & Dating"
+            },
+            {
+                question: "What is the primary driving force that moves the massive lithospheric plates across the surface of the Earth?",
+                options: [
+                    "The gravitational pull of the moon and the sun.",
+                    "The magnetic attraction between the North and South poles.",
+                    "Convection currents within the semi-fluid mantle, where hot material rises, cools, and sinks.",
+                    "The rotation of the Earth on its axis."
+                ],
+                correctIndex: 2,
+                rationale: "Heat from the Earth's core creates slow convection currents in the mantle, which drag the overlying tectonic plates.",
+                topic: "Plate Tectonics"
+            },
+            {
+                question: "A region features alternating valleys and ridges created by normal faults where the hanging wall has slid down. What type of tectonic stress is the crust experiencing?",
+                options: [
+                    "Compressional stress",
+                    "Shear stress",
+                    "Tensional stress",
+                    "Hydrostatic stress"
+                ],
+                correctIndex: 2,
+                rationale: "Tensional stress pulls the crust apart, causing normal faults where blocks of rock slide down, creating valleys (grabens).",
+                topic: "Plate Tectonics"
+            },
+            {
+                question: "Which of the following lines of evidence provides the most definitive proof that the Earth's outer core is a liquid rather than a solid?",
+                options: [
+                    "Volcanoes erupt liquid magma from the outer core.",
+                    "The Earth has a strong magnetic field, generated by the swirling motion of liquid iron in the outer core.",
+                    "Deep drilling projects have brought up samples of liquid iron.",
+                    "P-waves completely disappear at a depth of 2,900 km."
+                ],
+                correctIndex: 1,
+                rationale: "The geodynamo that creates our magnetic field requires a convecting, electrically conductive fluid (liquid iron outer core).",
+                topic: "Seismology & Earth's Interior"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let wrongTopics = new Set();
+
+        const questionTitle = document.getElementById('question-title');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const submitBtn = document.getElementById('submit-btn');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackStatus = document.getElementById('feedback-status');
+        const feedbackRationale = document.getElementById('feedback-rationale');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultContainer = document.getElementById('result-container');
+
+        function loadQuestion() {
+            // Reset UI for new question
+            feedbackContainer.classList.add('hidden');
+            submitBtn.classList.remove('hidden');
+            optionsContainer.innerHTML = '';
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionTitle.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+            questionText.innerText = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'quiz-option';
+                radio.value = index;
+
+                label.appendChild(radio);
+                label.appendChild(document.createTextNode(option));
+                optionsContainer.appendChild(label);
+            });
+        }
+
+        function submitAnswer() {
+            const selectedRadio = document.querySelector('input[name="quiz-option"]:checked');
+            if (!selectedRadio) {
+                alert("Please select an answer before submitting.");
+                return;
+            }
+
+            const selectedAnswer = parseInt(selectedRadio.value);
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            submitBtn.classList.add('hidden');
+            feedbackContainer.classList.remove('hidden');
+
+            if (selectedAnswer === currentQuestion.correctIndex) {
+                feedbackStatus.innerText = "Correct!";
+                feedbackStatus.style.color = "green";
+                score++;
+            } else {
+                feedbackStatus.innerText = "Incorrect.";
+                feedbackStatus.style.color = "red";
+                wrongTopics.add(currentQuestion.topic);
+            }
+
+            feedbackRationale.innerHTML = `<strong>Explanation:</strong> ${currentQuestion.rationale}`;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizContainer.classList.add('hidden');
+            feedbackContainer.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+
+            document.getElementById('score-display').innerText = `${score} / ${quizData.length} (${Math.round((score/quizData.length)*100)}%)`;
+
+            const mistakesContainer = document.getElementById('mistakes-feedback');
+            if (wrongTopics.size === 0) {
+                mistakesContainer.innerHTML = "<p>Perfect score! You have a masterful understanding of all the concepts.</p>";
+            } else {
+                let feedbackHtml = "<p>Based on your incorrect answers, you should review the following topics:</p><ul>";
+                
+                if (wrongTopics.has("Plate Tectonics")) {
+                    feedbackHtml += "<li><strong>Plate Tectonics:</strong> Review the mechanisms of plate movement (convection), boundaries (divergent, convergent, transform), paleomagnetism, and how stresses create faults.</li>";
+                }
+                if (wrongTopics.has("Seismology & Earth's Interior")) {
+                    feedbackHtml += "<li><strong>Seismology & Earth's Interior:</strong> Focus on the properties of P-waves and S-waves (S-waves can't travel through liquids), the Richter scale, and finding epicenters using lag time.</li>";
+                }
+                if (wrongTopics.has("Geologic Time & Dating")) {
+                    feedbackHtml += "<li><strong>Geologic Time & Dating:</strong> Brush up on half-lives, the limits of Carbon-14 dating, cross-cutting relationships, unconformities, and the Alvarez Hypothesis.</li>";
+                }
+                if (wrongTopics.has("Alberta Geology & Resources")) {
+                    feedbackHtml += "<li><strong>Alberta's Geology:</strong> Study the formation of the Western Canada Sedimentary Basin, the Leduc reefs (oil reservoirs), coal formation swamps, and glacial erratics.</li>";
+                }
+                if (wrongTopics.has("Climate & Glaciation")) {
+                    feedbackHtml += "<li><strong>Climate Science:</strong> Review how oxygen isotopes in ice cores act as paleoclimate indicators.</li>";
+                }
+
+                feedbackHtml += "</ul>";
+                mistakesContainer.innerHTML = feedbackHtml;
+            }
+        }
+
+        // Initialize the quiz on page load
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
